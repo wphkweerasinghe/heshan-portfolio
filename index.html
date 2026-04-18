@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heshan – Salesforce Developer</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['DM Sans', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace']
+      }
+    }
+  }
+}
+</script>
+  <style>
+html { scroll-behavior: smooth; }
+
+/* Theme variables */
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
+  --text-primary: #e2e8f0;
+  --accent-primary: #0176d3;
+  --accent-secondary: #1b96ff;
+}
+:root.light {
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --text-primary: #1e293b;
+  --accent-primary: #0176d3;
+  --accent-secondary: #1b96ff;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.4s, color 0.4s;
+}
+
+.card-bg {
+  background: var(--bg-secondary);
+  transition: background 0.4s;
+}
+
+.text-muted {
+  color: color-mix(in srgb, var(--text-primary) 60%, transparent);
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards;
+}
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+.float-anim { animation: float 3s ease-in-out infinite; }
+
+.hero-gradient {
+  background: linear-gradient(135deg, #0176d3, #1b96ff, #032d60, #0176d3);
+  background-size: 300% 300%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.profile-ring::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0176d3, #1b96ff);
+  animation: pulse-ring 2.5s ease-out infinite;
+  z-index: -1;
+}
+
+.skill-tag {
+  background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-secondary));
+  color: var(--accent-secondary);
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 30%, transparent);
+  transition: all 0.3s;
+}
+.skill-tag:hover {
+  background: color-mix(in srgb, var(--accent-primary) 30%, var(--bg-secondary));
+  transform: translateY(-2px);
+}
+
+.cert-card {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-primary) 10%, var(--bg-secondary)), var(--bg-secondary));
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 20%, transparent);
+  transition: all 0.3s;
+}
+.cert-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--accent-primary) 20%, transparent);
+}
+
+.project-card {
+  transition: all 0.4s;
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);
+}
+.project-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--accent-primary) 15%, transparent);
+}
+
+.timeline-line {
+  background: linear-gradient(to bottom, var(--accent-primary), color-mix(in srgb, var(--accent-primary) 20%, transparent));
+}
+
+.timeline-dot {
+  background: var(--accent-primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-primary) 25%, transparent);
+}
+
+.nav-link {
+  position: relative;
+  transition: color 0.3s;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent-primary);
+  transition: width 0.3s;
+}
+.nav-link:hover::after, .nav-link.active::after { width: 100%; }
+
+.cta-btn {
+  background: var(--accent-primary);
+  color: #fff;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+.cta-btn:hover::before { transform: translateX(100%); }
+.cta-btn:hover { box-shadow: 0 6px 25px color-mix(in srgb, var(--accent-primary) 40%, transparent); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--accent-primary); border-radius: 3px; }
+
+/* Intersection observer reveal */
+.reveal { opacity: 0; transform: translateY(25px); transition: opacity 0.6s, transform 0.6s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-sans">
+  <div id="app-wrapper" class="w-full h-full overflow-auto">
+   <!-- Navigation -->
+   <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: transparent;">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+     <a href="#hero" class="font-bold text-xl tracking-tight" style="color: var(--accent-primary);"> Heshan </a>
+     <div class="hidden md:flex items-center gap-8">
+      <a href="#about" class="nav-link text-sm font-medium" style="color: var(--text-primary);">About</a> <a href="#experience" class="nav-link text-sm font-medium" style="color: var(--text-primary);">Experience</a> <a href="#projects" class="nav-link text-sm font-medium" style="color: var(--text-primary);">Projects</a> <a href="#skills" class="nav-link text-sm font-medium" style="color: var(--text-primary);">Skills</a> <a href="#certifications" class="nav-link text-sm font-medium" style="color: var(--text-primary);">Certifications</a> <a href="#contact" class="nav-link text-sm font-medium" style="color: var(--text-primary);">Contact</a>
+     </div>
+     <div class="flex items-center gap-3">
+      <button id="theme-toggle" class="p-2 rounded-full transition-colors" style="background: var(--bg-secondary);" aria-label="Toggle theme"> <i data-lucide="moon" class="w-4 h-4" id="theme-icon-dark" style="color: var(--text-primary);"></i> <i data-lucide="sun" class="w-4 h-4 hidden" id="theme-icon-light" style="color: var(--text-primary);"></i> </button> <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg" style="color: var(--text-primary);" aria-label="Menu"> <i data-lucide="menu" class="w-5 h-5"></i> </button>
+     </div>
+    </div><!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+     <div class="card-bg rounded-xl p-4 flex flex-col gap-3" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 15%, transparent);">
+      <a href="#about" class="text-sm font-medium py-2" style="color: var(--text-primary);" onclick="closeMobileMenu()">About</a> <a href="#experience" class="text-sm font-medium py-2" style="color: var(--text-primary);" onclick="closeMobileMenu()">Experience</a> <a href="#projects" class="text-sm font-medium py-2" style="color: var(--text-primary);" onclick="closeMobileMenu()">Projects</a> <a href="#skills" class="text-sm font-medium py-2" style="color: var(--text-primary);" onclick="closeMobileMenu()">Skills</a> <a href="#certifications" class="text-sm font-medium py-2" style="color: var(--text-primary);" onclick="closeMobileMenu()">Certifications</a> <a href="#contact" class="text-sm font-medium py-2" style="color: var(--text-primary);" onclick="closeMobileMenu()">Contact</a>
+     </div>
+    </div>
+   </nav><!-- Hero Section -->
+   <section id="hero" class="relative min-h-screen flex items-center justify-center px-6 overflow-hidden" style="min-height: 100%;">
+    <!-- Background decoration -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+     <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-10 hero-gradient blur-3xl"></div>
+     <div class="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-10 hero-gradient blur-3xl" style="animation-delay: 4s;"></div><!-- Grid pattern -->
+     <svg class="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+       <pattern id="grid" width="40" height="40" patternunits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.5" style="color: var(--accent-primary);" />
+       </pattern>
+      </defs> <rect width="100%" height="100%" fill="url(#grid)" />
+     </svg>
+    </div>
+    <div class="relative z-10 text-center max-w-3xl mx-auto pt-20">
+     <!-- Profile image -->
+     <div class="animate-fade-up mb-8 inline-block">
+      <div class="profile-ring relative w-32 h-32 mx-auto rounded-full float-anim">
+       <div class="w-full h-full rounded-full flex items-center justify-center text-4xl font-bold" style="background: linear-gradient(135deg, #0176d3, #032d60); color: #fff;">
+        <img class="profile-ring relative w-32 h-32 mx-auto rounded-full float-anim" src="image/HeshanProfile.jpg" alt="Heshan">
+       </div>
+      </div>
+     </div><!-- Status badge -->
+     <div class="animate-fade-up delay-1 mb-4">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-medium" style="background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-secondary)); color: var(--accent-secondary); border: 1px solid color-mix(in srgb, var(--accent-primary) 25%, transparent);"> <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Available for opportunities </span>
+     </div>
+     <h1 id="hero-name" class="animate-fade-up delay-2 text-5xl md:text-7xl font-bold tracking-tight mb-3" style="color: var(--text-primary);">Heshan Kalhara</h1>
+     <p id="hero-title" class="animate-fade-up delay-3 text-xl md:text-2xl font-medium mb-4" style="color: var(--accent-secondary);">Salesforce Developer</p>
+     <p id="hero-tagline" class="animate-fade-up delay-4 text-base md:text-lg max-w-xl mx-auto mb-8 text-muted">Building scalable Salesforce solutions with Apex, LWC, and integrations</p>
+     <div class="animate-fade-up delay-5 flex flex-wrap justify-center gap-4">
+      <a href="#projects" class="cta-btn px-8 py-3 rounded-xl font-semibold text-sm inline-flex items-center gap-2"> <i data-lucide="folder-open" class="w-4 h-4"></i> View Projects </a> <a href="#contact" class="px-8 py-3 rounded-xl font-semibold text-sm inline-flex items-center gap-2 transition-all" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 40%, transparent); color: var(--text-primary);"> <i data-lucide="mail" class="w-4 h-4"></i> Get in Touch </a>
+     </div><!-- Scroll indicator -->
+     <div class="mt-16 animate-bounce">
+      <i data-lucide="chevron-down" class="w-5 h-5 mx-auto" style="color: var(--accent-primary);"></i>
+     </div>
+    </div>
+   </section><!-- About Section -->
+   <section id="about" class="px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+     <div class="reveal">
+      <p class="text-sm font-mono font-medium mb-2" style="color: var(--accent-primary);">01 — About</p>
+      <h2 class="text-3xl md:text-4xl font-bold mb-8" style="color: var(--text-primary);">About Me</h2>
+     </div>
+     <div class="reveal card-bg rounded-2xl p-8 md:p-10" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+      <p id="about-text" class="text-base md:text-lg leading-relaxed text-muted">Results-driven Salesforce Developer with experience in designing, developing, and optimizing scalable Salesforce solutions. Skilled in Apex, Lightning Web Components (LWC), integrations, and automation. Strong focus on performance, security, and maintainability. Experienced in Service Cloud and Field Service Lightning. Passionate about mentoring, community contribution, and continuous learning.</p>
+      <div class="mt-8 flex flex-wrap gap-6">
+       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-primary));">
+         <i data-lucide="briefcase" class="w-5 h-5" style="color: var(--accent-secondary);"></i>
+        </div>
+        <div>
+         <p class="text-xs text-muted">Experience</p>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">3+ Years</p>
+        </div>
+       </div>
+       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-primary));">
+         <i data-lucide="award" class="w-5 h-5" style="color: var(--accent-secondary);"></i>
+        </div>
+        <div>
+         <p class="text-xs text-muted">Certifications</p>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">5 Certified</p>
+        </div>
+       </div>
+       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-primary));">
+         <i data-lucide="users" class="w-5 h-5" style="color: var(--accent-secondary);"></i>
+        </div>
+        <div>
+         <p class="text-xs text-muted">Community</p>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">Co-Leader of Salesforce Developer Group Colombo</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Experience Section -->
+   <section id="experience" class="px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+     <div class="reveal">
+      <p class="text-sm font-mono font-medium mb-2" style="color: var(--accent-primary);">02 — Experience</p>
+      <h2 class="text-3xl md:text-4xl font-bold mb-12" style="color: var(--text-primary);">Professional Experience</h2>
+     </div>
+     <div class="relative">
+      <!-- Timeline line -->
+      <div class="absolute left-4 md:left-6 top-0 bottom-0 w-0.5 timeline-line"></div><!-- Experience 1 -->
+      <div class="reveal relative pl-14 md:pl-20 pb-12">
+       <div class="absolute left-2.5 md:left-4.5 top-1.5 w-3 h-3 rounded-full timeline-dot"></div>
+       <div class="card-bg rounded-2xl p-6 md:p-8" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+        <div class="flex flex-wrap items-start justify-between gap-2 mb-4">
+         <h3 class="text-lg font-bold" style="color: var(--text-primary);">Salesforce Developer</h3><span class="text-xs font-mono px-3 py-1 rounded-full" style="background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-primary)); color: var(--accent-secondary);">2025 – Present</span>
+        </div>
+        <ul class="space-y-2 text-sm text-muted">
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Design and optimize scalable Salesforce solutions using Apex and LWC</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Lead troubleshooting and performance tuning (FSL &amp; Service Cloud)</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Build integrations with external systems</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Enforce best practices and code quality</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Conduct code reviews and mentor developers</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Contribute to architecture and scalability decisions</li>
+        </ul>
+       </div>
+      </div><!-- Experience 2 -->
+      <div class="reveal relative pl-14 md:pl-20 pb-12">
+       <div class="absolute left-2.5 md:left-4.5 top-1.5 w-3 h-3 rounded-full timeline-dot"></div>
+       <div class="card-bg rounded-2xl p-6 md:p-8" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+        <div class="flex flex-wrap items-start justify-between gap-2 mb-4">
+         <h3 class="text-lg font-bold" style="color: var(--text-primary);">Associate Salesforce Developer</h3><span class="text-xs font-mono px-3 py-1 rounded-full" style="background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-primary)); color: var(--accent-secondary);">2024 – 2025</span>
+        </div>
+        <ul class="space-y-2 text-sm text-muted">
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Developed custom Salesforce applications</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Resolved issues in FSL and Service Cloud</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Supported integrations and secure coding practices</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Contributed to testing, documentation, and Agile processes</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Mentored interns</li>
+        </ul>
+       </div>
+      </div><!-- Experience 3 -->
+      <div class="reveal relative pl-14 md:pl-20">
+       <div class="absolute left-2.5 md:left-4.5 top-1.5 w-3 h-3 rounded-full timeline-dot"></div>
+       <div class="card-bg rounded-2xl p-6 md:p-8" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+        <div class="flex flex-wrap items-start justify-between gap-2 mb-4">
+         <h3 class="text-lg font-bold" style="color: var(--text-primary);">Salesforce Intern</h3><span class="text-xs font-mono px-3 py-1 rounded-full" style="background: color-mix(in srgb, var(--accent-primary) 15%, var(--bg-primary)); color: var(--accent-secondary);">2023 – 2024</span>
+        </div>
+        <ul class="space-y-2 text-sm text-muted">
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Built applications from requirements</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Prepared documentation and test cases</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Performed testing and R&amp;D</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Gained hands-on Salesforce experience</li>
+        </ul>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Projects Section -->
+   <section id="projects" class="px-6 py-24">
+    <div class="max-w-5xl mx-auto">
+     <div class="reveal">
+      <p class="text-sm font-mono font-medium mb-2" style="color: var(--accent-primary);">03 — Projects</p>
+      <h2 class="text-3xl md:text-4xl font-bold mb-12" style="color: var(--text-primary);">Featured Projects</h2>
+     </div>
+     <div class="grid md:grid-cols-2 gap-6">
+      <!-- Project 1 -->
+      <div class="reveal project-card card-bg rounded-2xl p-6 md:p-8">
+       <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, #0176d3, #1b96ff);">
+        <i data-lucide="git-branch" class="w-6 h-6 text-white"></i>
+       </div>
+       <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">Salesforce–Git Integration Platform</h3>
+       <p class="text-sm text-muted mb-4">Enables non-technical admins to manage Git operations — commit, merge requests — directly from Salesforce.</p>
+       <div class="flex flex-wrap gap-2">
+        <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">LWC</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Apex</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Flows</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Connected Apps</span>
+       </div>
+      </div><!-- Project 2 -->
+      <div class="reveal project-card card-bg rounded-2xl p-6 md:p-8">
+       <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, #ff9900, #ffb84d);">
+        <i data-lucide="cloud" class="w-6 h-6 text-white"></i>
+       </div>
+       <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">AWS S3 &amp; Salesforce Integration</h3>
+       <p class="text-sm text-muted mb-4">Cost-saving file storage solution replacing native Salesforce storage. Features upload, view, delete, version, and restore.</p>
+       <div class="flex flex-wrap gap-2">
+        <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Apex</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">LWC</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">AWS S3</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Flows</span>
+       </div>
+      </div><!-- Project 3 -->
+      <div class="reveal project-card card-bg rounded-2xl p-6 md:p-8">
+       <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, #10b981, #34d399);">
+        <i data-lucide="globe" class="w-6 h-6 text-white"></i>
+       </div>
+       <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">Client Project (US Client)</h3>
+       <p class="text-sm text-muted mb-4">Built automations, integrations, secure data handling, and push notifications. Enhanced FSL, Service Cloud, OmniStudio, and Experience Cloud.</p>
+       <div class="flex flex-wrap gap-2">
+        <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">FSL</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Service Cloud</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">OmniStudio</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Experience Cloud</span>
+       </div>
+      </div><!-- Project 4 -->
+      <div class="reveal project-card card-bg rounded-2xl p-6 md:p-8">
+       <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+        <i data-lucide="mail" class="w-6 h-6 text-white"></i>
+       </div>
+       <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">Marketing Automation</h3>
+       <p class="text-sm text-muted mb-4">Built Account Engagement campaigns and email automation workflows for internal marketing initiatives.</p>
+       <div class="flex flex-wrap gap-2">
+        <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Account Engagement</span> <span class="skill-tag text-xs px-2.5 py-1 rounded-md font-mono">Email Automation</span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Skills Section -->
+   <section id="skills" class="px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+     <div class="reveal">
+      <p class="text-sm font-mono font-medium mb-2" style="color: var(--accent-primary);">04 — Skills</p>
+      <h2 class="text-3xl md:text-4xl font-bold mb-12" style="color: var(--text-primary);">Technical Skills</h2>
+     </div>
+     <div class="reveal grid sm:grid-cols-2 gap-6">
+      <div class="card-bg rounded-2xl p-6" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+       <h3 class="font-semibold mb-4 flex items-center gap-2" style="color: var(--accent-secondary);"><i data-lucide="code-2" class="w-5 h-5"></i> Development</h3>
+       <div class="flex flex-wrap gap-2">
+        <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">Apex</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">LWC</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">SOQL</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">SOSL</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">Flows</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">Triggers</span>
+       </div>
+      </div>
+      <div class="card-bg rounded-2xl p-6" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+       <h3 class="font-semibold mb-4 flex items-center gap-2" style="color: var(--accent-secondary);"><i data-lucide="layers" class="w-5 h-5"></i> Platforms</h3>
+       <div class="flex flex-wrap gap-2">
+        <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">Service Cloud</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">Field Service Lightning</span>
+       </div>
+      </div>
+      <div class="card-bg rounded-2xl p-6" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+       <h3 class="font-semibold mb-4 flex items-center gap-2" style="color: var(--accent-secondary);"><i data-lucide="link" class="w-5 h-5"></i> Integrations</h3>
+       <div class="flex flex-wrap gap-2">
+        <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">REST API</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">SOAP API</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">Git</span>
+       </div>
+      </div>
+      <div class="card-bg rounded-2xl p-6" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+       <h3 class="font-semibold mb-4 flex items-center gap-2" style="color: var(--accent-secondary);"><i data-lucide="puzzle" class="w-5 h-5"></i> Ecosystem</h3>
+       <div class="flex flex-wrap gap-2">
+        <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">MuleSoft</span> <span class="skill-tag text-sm px-3 py-1.5 rounded-lg font-mono">OmniStudio</span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Certifications Section -->
+   <section id="certifications" class="px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+     <div class="reveal">
+      <p class="text-sm font-mono font-medium mb-2" style="color: var(--accent-primary);">05 — Certifications</p>
+      <h2 class="text-3xl md:text-4xl font-bold mb-12" style="color: var(--text-primary);">Certifications</h2>
+     </div>
+     <div class="reveal grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="cert-card rounded-xl p-5">
+       <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background: linear-gradient(135deg, #0176d3, #032d60);">
+         <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">Platform Developer I</p>
+         <p class="text-xs text-muted mt-1">Salesforce Certified · 2025</p>
+        </div>
+       </div>
+      </div>
+      <div class="cert-card rounded-xl p-5">
+       <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background: linear-gradient(135deg, #0176d3, #032d60);">
+         <i data-lucide="layout" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">Platform App Builder</p>
+         <p class="text-xs text-muted mt-1">Salesforce Certified · 2025</p>
+        </div>
+       </div>
+      </div>
+      <div class="cert-card rounded-xl p-5">
+       <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background: linear-gradient(135deg, #0176d3, #032d60);">
+         <i data-lucide="settings" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">Administrator</p>
+         <p class="text-xs text-muted mt-1">Salesforce Certified · 2024</p>
+        </div>
+       </div>
+      </div>
+      <div class="cert-card rounded-xl p-5">
+       <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+         <i data-lucide="brain" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">AI Associate</p>
+         <p class="text-xs text-muted mt-1">Salesforce Certified · 2024</p>
+        </div>
+       </div>
+      </div>
+      <div class="cert-card rounded-xl p-5">
+       <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background: linear-gradient(135deg, #0176d3, #032d60);">
+         <i data-lucide="user-check" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">Salesforce Associate</p>
+         <p class="text-xs text-muted mt-1">Salesforce Certified · 2023</p>
+        </div>
+       </div>
+      </div>
+      <div class="cert-card rounded-xl p-5">
+       <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center" style="background: linear-gradient(135deg, #10b981, #059669);">
+         <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+         <p class="font-semibold text-sm" style="color: var(--text-primary);">Intro to Generative AI &amp; LLMs</p>
+         <p class="text-xs text-muted mt-1">Google Cloud · 2023</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Leadership & Community -->
+   <section id="community" class="px-6 py-24">
+    <div class="max-w-4xl mx-auto">
+     <div class="reveal">
+      <p class="text-sm font-mono font-medium mb-2" style="color: var(--accent-primary);">06 — Community</p>
+      <h2 class="text-3xl md:text-4xl font-bold mb-8" style="color: var(--text-primary);">Leadership &amp; Community</h2>
+     </div>
+     <div class="reveal card-bg rounded-2xl p-8 md:p-10" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent);">
+      <div class="flex items-start gap-5">
+       <div class="w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center" style="background: linear-gradient(135deg, #0176d3, #1b96ff);">
+        <i data-lucide="users" class="w-7 h-7 text-white"></i>
+       </div>
+       <div>
+        <h3 class="text-xl font-bold mb-1" style="color: var(--text-primary);">Co-Leader — Salesforce Developer Group Colombo</h3>
+        <p class="text-sm text-muted mb-4">Sri Lanka</p>
+        <ul class="space-y-2 text-sm text-muted">
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Actively share Salesforce knowledge with the Sri Lankan community</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Organize events, mentor developers, and promote learning</li>
+         <li class="flex items-start gap-2"><i data-lucide="chevron-right" class="w-4 h-4 mt-0.5 flex-shrink-0" style="color: var(--accent-primary);"></i>Foster collaboration and growth within the ecosystem</li>
+        </ul>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Contact Section -->
+   <section id="contact" class="px-6 py-24">
+    <div class="max-w-4xl mx-auto text-center">
+     <div class="reveal">
+      <p class="text-sm font-mono font-medium mb-2" style="color: var(--accent-primary);">07 — Contact</p>
+      <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: var(--text-primary);">Let's Connect</h2>
+      <p class="text-muted mb-10 max-w-lg mx-auto">Interested in working together or just want to say hello? Feel free to reach out through any of the channels below.</p>
+     </div>
+     <div class="reveal flex flex-wrap justify-center gap-4">
+      <a id="contact-email-link" href="mailto:hello@heshan.dev" class="card-bg rounded-xl px-6 py-4 flex items-center gap-3 transition-all hover:scale-105" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 15%, transparent);"> <i data-lucide="mail" class="w-5 h-5" style="color: var(--accent-secondary);"></i> <span id="contact-email-text" class="text-sm font-medium" style="color: var(--text-primary);">hkalhara777@gmail.com</span> </a> <a id="contact-phone-link" href="tel:+94774876119" class="card-bg rounded-xl px-6 py-4 flex items-center gap-3 transition-all hover:scale-105" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 15%, transparent);"> <i data-lucide="phone" class="w-5 h-5" style="color: var(--accent-secondary);"></i> <span id="contact-phone-text" class="text-sm font-medium" style="color: var(--text-primary);">+94 774876119</span> </a> <a id="contact-linkedin-link" href="https://www.linkedin.com/in/heshan-kalhara-949484214/" target="_blank" rel="noopener noreferrer" class="card-bg rounded-xl px-6 py-4 flex items-center gap-3 transition-all hover:scale-105" style="border: 1px solid color-mix(in srgb, var(--accent-primary) 15%, transparent);"> <i data-lucide="linkedin" class="w-5 h-5" style="color: var(--accent-secondary);"></i> <span class="text-sm font-medium" style="color: var(--text-primary);">LinkedIn</span> </a>
+     </div>
+    </div>
+   </section><!-- Footer -->
+   <footer class="px-6 py-8 text-center">
+    <p class="text-xs text-muted">© 2026 Heshan. Built with <span style="color: var(--accent-primary);">♥</span> and Salesforce expertise.</p>
+   </footer>
+  </div>
+  <script>
+// Default config
+const defaultConfig = {
+  background_color: '#0a0e1a',
+  surface_color: '#111827',
+  text_color: '#e2e8f0',
+  accent_color: '#0176d3',
+  accent_secondary_color: '#1b96ff',
+  font_family: 'DM Sans',
+  font_size: 16,
+  hero_name: 'Heshan Kalhara',
+  hero_title: 'Salesforce Developer',
+  hero_tagline: 'Building scalable Salesforce solutions with Apex, LWC, and integrations',
+  about_text: 'Results-driven Salesforce Developer with experience in designing, developing, and optimizing scalable Salesforce solutions. Skilled in Apex, Lightning Web Components (LWC), integrations, and automation. Strong focus on performance, security, and maintainability. Experienced in Service Cloud and Field Service Lightning. Passionate about mentoring, community contribution, and continuous learning.',
+  contact_email: 'hkalhara777@gmail.com',
+  contact_linkedin: 'https://www.linkedin.com/in/heshan-kalhara-949484214/',
+  contact_github: 'https://github.com/heshan',
+  is_dark: true
+};
+
+// Theme toggle
+let isDark = true;
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.classList.toggle('light', !isDark);
+  document.getElementById('theme-icon-dark').classList.toggle('hidden', !isDark);
+  document.getElementById('theme-icon-light').classList.toggle('hidden', isDark);
+
+  if (isDark) {
+    document.documentElement.style.setProperty('--bg-primary', '#0a0e1a');
+    document.documentElement.style.setProperty('--bg-secondary', '#111827');
+    document.documentElement.style.setProperty('--text-primary', '#e2e8f0');
+  } else {
+    document.documentElement.style.setProperty('--bg-primary', '#f1f5f9');
+    document.documentElement.style.setProperty('--bg-secondary', '#ffffff');
+    document.documentElement.style.setProperty('--text-primary', '#1e293b');
+  }
+}
+
+document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+// Mobile menu
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.add('hidden');
+}
+document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+  document.getElementById('mobile-menu').classList.toggle('hidden');
+});
+
+// Navbar scroll effect
+const appWrapper = document.getElementById('app-wrapper');
+appWrapper.addEventListener('scroll', () => {
+  const nav = document.getElementById('main-nav');
+  if (appWrapper.scrollTop > 50) {
+    nav.style.background = 'color-mix(in srgb, var(--bg-primary) 85%, transparent)';
+    nav.style.backdropFilter = 'blur(12px)';
+    nav.style.borderBottom = '1px solid color-mix(in srgb, var(--accent-primary) 10%, transparent)';
+  } else {
+    nav.style.background = 'transparent';
+    nav.style.backdropFilter = 'none';
+    nav.style.borderBottom = 'none';
+  }
+});
+
+// Intersection observer for reveal animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, root: appWrapper });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Element SDK
+function applyConfig(config) {
+  const c = { ...defaultConfig, ...config };
+
+  document.getElementById('hero-name').textContent = c.hero_name;
+  document.getElementById('hero-title').textContent = c.hero_title;
+  document.getElementById('hero-tagline').textContent = c.hero_tagline;
+  document.getElementById('about-text').textContent = c.about_text;
+
+  // Contact
+  document.getElementById('contact-email-link').href = 'mailto:' + c.contact_email;
+  document.getElementById('contact-email-text').textContent = c.contact_email;
+  document.getElementById('contact-linkedin-link').href = c.contact_linkedin;
+  document.getElementById('contact-github-link').href = c.contact_github;
+
+  // Font
+  const font = c.font_family || defaultConfig.font_family;
+  document.body.style.fontFamily = `${font}, sans-serif`;
+
+  // Font size scaling
+  const base = c.font_size || defaultConfig.font_size;
+  document.getElementById('hero-name').style.fontSize = '';
+  document.getElementById('hero-tagline').style.fontSize = `${base}px`;
+
+  // Colors
+  document.documentElement.style.setProperty('--accent-primary', c.accent_color);
+  document.documentElement.style.setProperty('--accent-secondary', c.accent_secondary_color);
+}
+
+if (window.elementSdk) {
+  window.elementSdk.init({
+    defaultConfig,
+    onConfigChange: async (config) => { applyConfig(config); },
+    mapToCapabilities: (config) => {
+      const c = { ...defaultConfig, ...config };
+      return {
+        recolorables: [
+          { get: () => c.background_color || defaultConfig.background_color, set: (v) => { c.background_color = v; if(isDark) document.documentElement.style.setProperty('--bg-primary', v); window.elementSdk.setConfig({ background_color: v }); } },
+          { get: () => c.surface_color || defaultConfig.surface_color, set: (v) => { c.surface_color = v; if(isDark) document.documentElement.style.setProperty('--bg-secondary', v); window.elementSdk.setConfig({ surface_color: v }); } },
+          { get: () => c.text_color || defaultConfig.text_color, set: (v) => { c.text_color = v; if(isDark) document.documentElement.style.setProperty('--text-primary', v); window.elementSdk.setConfig({ text_color: v }); } },
+          { get: () => c.accent_color || defaultConfig.accent_color, set: (v) => { c.accent_color = v; document.documentElement.style.setProperty('--accent-primary', v); window.elementSdk.setConfig({ accent_color: v }); } },
+          { get: () => c.accent_secondary_color || defaultConfig.accent_secondary_color, set: (v) => { c.accent_secondary_color = v; document.documentElement.style.setProperty('--accent-secondary', v); window.elementSdk.setConfig({ accent_secondary_color: v }); } }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => c.font_family || defaultConfig.font_family,
+          set: (v) => { c.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+        },
+        fontSizeable: {
+          get: () => c.font_size || defaultConfig.font_size,
+          set: (v) => { c.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+        }
+      };
+    },
+    mapToEditPanelValues: (config) => {
+      const c = { ...defaultConfig, ...config };
+      return new Map([
+        ['hero_name', c.hero_name],
+        ['hero_title', c.hero_title],
+        ['hero_tagline', c.hero_tagline],
+        ['about_text', c.about_text],
+        ['contact_email', c.contact_email],
+        ['contact_linkedin', c.contact_linkedin],
+        ['contact_github', c.contact_github]
+      ]);
+    }
+  });
+}
+
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ee42a2c96d35132',t:'MTc3NjUyMDUwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
